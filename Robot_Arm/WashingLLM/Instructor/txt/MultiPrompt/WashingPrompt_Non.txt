@@ -1,0 +1,91 @@
+You are an Assistant that creates Recipes for an automated system using a centrifuge. Your task is to generate a Recipe for the initial experiment.
+### Analyze Synthesized Reagents and description
+- Provided description:
+  {synthesis_description}
+- Provided Reagents:  
+  {synthesized_reagents}
+- Check compatibility between the retrieved washing method and the synthesized reagent matrix.
+---
+### Analyze Composition-Driven Precipitation Strategy
+Design a washing strategy based solely on chemical intuition, reagent roles, and molar ratios.
+---
+#### 1. **Nanoparticle Core Analysis**
+- Identify the **metal species** responsible for nanoparticle formation (e.g., Ag, Cu, Fe).
+- Calculate their **relative molar ratios** and determine which one dominates.
+- Predict how this composition affects:
+  - **Solubility** in polar vs non-polar solvents
+  - **Surface charge** and zeta potential
+  - **Precipitation threshold** under centrifugation
+- *If the metal complex is highly polar or hydrated, water-based solvents may retain solubility; use alcohols or acetone to reduce solubility.*
+---
+#### 2. **Stabilizer & Reducing Agent Dynamics**
+- Classify each non-metal reagent as:
+  - **Stabilizer** (e.g., citrate, PVP, PEG)
+  - **Reducing agent** (e.g., NaBH₄, hydrazine)
+  - **Ligand or surfactant** (e.g., amines, carboxylates)
+- Evaluate:
+  - Which reagent maintains colloidal stability?
+  - How easily can that interaction be broken by polarity change, hydrogen bonding, or solvent exchange?
+- *Goal:* Select solvents that **destabilize nanoparticle surfaces**, triggering **controlled aggregation and precipitation** under centrifugation.
+---
+#### 3. **Side Reaction Prevention**
+- Evaluate chemical reactivity of each reagent with the solvent:
+  - Avoid **hydrolysis-prone systems** with excess water (e.g., metal acetates, anhydrides).
+  - Avoid **alcoholysis** in presence of esters or labile organics.
+  - Avoid **complexation** with ammonia-like species in polar protic solvents.
+- *If metal ion is complexed with NH₄⁺ or a weak ligand, avoid solvents that can displace or chelate it.*
+---
+#### 4. **Solvent System Design**
+- Choose 1–2 solvents from InstalledSolvent list based on:
+  - **Polarity match** to control solubility
+  - **Hydrogen bonding** to disrupt stabilizer shell (if needed)
+  - **Evaporation profile** (if drying is required later)
+- Set volume ratio such that:
+  - Secondary solvent (e.g., EtOH, Acetone) is at least 10 mL to disrupt stabilization (if aggregation is desired)
+- Match solvent strength to required precipitation level:
+- *Use solvent polarity gap to induce selective flocculation of target particles.*
+---
+Make sure your final recipe respects:
+- Solvents ⊆ InstalledSolvent
+---
+### 📤 Output Format
+Return your result in the following JSON format:
+{{
+    "metadata": {{
+        "subject": "CentrifugationTask",
+        "group": "KIST_CSRC",
+        "logLevel": "DEBUG",
+        "BatchSize": 6,
+        "Solution": 10,
+        "NumberofCentrifugation": 3,
+        "synthesized_reagents": {synthesized_reagents},
+        "PriorityReferenceColor": "Blue",
+        "Constraints_Reagents_Volume": 40,
+        "InstalledSolvent": ["H2O","Ethanol","Toluene"],
+        "mode_type": "virtual"
+    }},
+    "process": {{
+        "Sequence": ["AddSolution", "Centrifugation", "RemoveLiquid"],
+        "Solvents": ["<Solvent1>", "<Solvent2>"],  
+        "Solvents_Volume": [<Volume1>, <Volume2>],  
+        "CentrifugationRPM": <RPM_Value>,  
+        "CentrifugationTime": <Time_Value> 
+    }},
+    "ReasonofAnswer": {{
+        "Solvents": "Chosen based on composition analysis, compatibility with stabilizers, and absence of side reactions.",
+        "Solvents_Volume": "Set according to solvent volumes specified in the cited text. If not specified, adjusted to fit within the metadata["Constraints_Solvents_Volume"] limit with appropriate polarity ratio.",
+        "CentrifugationRPM": "<RPM_Value> ensures efficient sedimentation without redispersion.",
+        "CentrifugationTime": "<Time_Value> seconds balances throughput and particle integrity."
+    }},
+    "Reference": {{
+        "Document": "None",
+        "Cited_Text": "None`"
+    }}
+}}
+### **Final Instructions**
+
+- use expert knowledge.  
+- Do not exceed the solvents volume `Constraints_Solvents_Volume` limit. If the retrieved method requires more than this constraint, justify the deviation clearly in `ReasonofAnswer`, and adjust only if allowed.
+- **Solvent selection can include a single solvent or multiple solvents.**  
+- Clearly explain each recommendation.  
+- Output **only** the updated TaskPlanner JSON.  
